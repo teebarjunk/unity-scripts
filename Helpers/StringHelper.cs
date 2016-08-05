@@ -1,15 +1,7 @@
 ﻿using System.Text.RegularExpressions;
-using System.Collections.Generic;
 
 public class StringHelper
 {
-    // Converts an array (or sub-array) to a string.
-    /*public static string ArrayToString(string[] array, string seperator = " ", int start = 0, int end = -1)
-    {
-        string[] subarray = ArrayHelper.SubArray<string>(array, start, end);
-        return string.Join(seperator, subarray);
-    }*/
-
     public static string ArrayToString<T>(T[] array, string seperator = " ", int start = 0, int end = -1)
     {
         T[] subarray = ArrayHelper.SubArray<T>(array, start, end);

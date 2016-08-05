@@ -2,6 +2,7 @@
 /*/
 !/Base/
 !/Helpers/
+*.meta
 
 # Windows image file caches
 Thumbs.db

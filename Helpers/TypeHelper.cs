@@ -38,7 +38,7 @@ public static class TypeHelper
     {
         switch (toConvert.ToLower())
         {
-            case "0":
+            case "1":
             case "true":
             case "t":
                 return true;
