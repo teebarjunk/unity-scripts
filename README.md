@@ -1,6 +1,18 @@
 # unity-scripts v.1
 some script to make stuff easier.
 
+#### Console.cs
+* Features
+* How to use.
+* Examples.
+* Advanced usage.
+ * History & auto complete.
+ * Binding commands to keys.
+ * Returning a reference to an object.
+* Render Debug
+* TODO
+
+
 # Console.cs
 ### Features
 * Toggleable console for play mode.
@@ -63,7 +75,7 @@ SetSettings t false 1 0 TRUE False
 
 
 ### Advanced Usage
-#### History & Auto complete.
+#### History & auto complete.
 Up arrow = moves through history.
 
 Down arrow = moves through auto complete. (when available.)
