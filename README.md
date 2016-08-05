@@ -65,8 +65,11 @@ SetSettings t false 1 0 TRUE False
 ### Advanced Usage
 #### History & Auto complete.
 Up arrow = moves through history.
+
 Down arrow = moves through auto complete. (when available.)
+
 Enter = select auto complete.
+
 Left/Right = back to input field.
 
 #### Binding commands to keys.
