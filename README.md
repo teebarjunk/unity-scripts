@@ -41,28 +41,34 @@ GiveItem
 
 // Arrays are automatically created.
 SpawnEnemies Orc Orc Orc
-// Becomes: Console_SpawnEnemies([Orc, Orc, Orc])
+//>> Console_SpawnEnemies([Orc, Orc, Orc])
 
 // But explicitly surrounding them with quotations and using commas will allow spaces in their names.
 SpawnEnemies "Orc,Orc,Orc Leader"
-// Becomes: Console_SpawnEnemies([Orc, Orc, Orc Leader])
+//>> Console_SpawnEnemies([Orc, Orc, Orc Leader])
 
 // If you don't explicitly type an array, make sure it is the last parameter.
 SpawnEnemiesWithItem Sword 1 Orc Orc Orc
-// Becomes: Console_SpawnEnemiesWithItem(Sword, 1, [Orc, Orc, Orc])
+//>> Console_SpawnEnemiesWithItem(Sword, 1, [Orc, Orc, Orc])
 
 // The last array doesn't need quotes if you don't feel like it.
 // Commas in arrays are only necessary if you want spaces between strings.
 SpawnEnemiesWithItems "Sword Bow Axe" "1 2 3" Orc Orc Orc
-// Becomes: Console_SpawnEnemiesWithItems([Sword, Bow, Axe], [1, 2, 3], [Orc, Orc, Orc])
+//>> Console_SpawnEnemiesWithItems([Sword, Bow, Axe], [1, 2, 3], [Orc, Orc, Orc])
 
 // Booleans converted from strings or ints.
 SetSettings t false 1 0 TRUE False
-// Becomes: Console_SetSettings([true, false, true, false, true, false])
+//>> Console_SetSettings([true, false, true, false, true, false])
 ```
 
 
 ### Advanced Usage
+#### History & Auto complete.
+Up arrow = moves through history.
+Down arrow = moves through auto complete. (when available.)
+Enter = select auto complete.
+Left/Right = back to input field.
+
 #### Binding commands to keys.
 You can bind a command to a number key for faster play testing.
 ```C#
@@ -73,6 +79,7 @@ bind 2 SetHealth 10
 bind 3 SpawnEnemies Orc Orc Orc
 bind 4 SpawnEnemies "Orc Master,Orc,Orc,Orc Slave"
 ```
+
 #### Returning a reference to an object.
 If you want methods to recieve a reference to an object:
 ```c#
