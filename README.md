@@ -13,12 +13,12 @@ some script to make stuff easier.
 
 ### How to use.
 * Add Console.cs to any GameOject.
-* Create public methods in any component that start with Console_ (i.e. Console_ResetHealth(int newHealth = 100))
+* Inside any component scrtip create a method that start with Console_ (i.e. Console_ResetHealth(int newHealth = 100))
 * In play mode hit ~ to toggle Console.
-* Type: "ResetHealth" to call Console_ResetHealth on all objects, with the default parameters. (i.e. 100)
+* Type: "ResetHealth" to call Console_ResetHealth on all objects, with the default parameter. (i.e. 100)
 * Type: "Player ResetHealth" to only call it on the object named Player.
 * Type: "Player ResetHealth 10" and it will set 10 as the parameter.
-It's best if every Console_ method has default parameters set, so you don't get any problems.
+It's best if every method has default parameters set, so you don't get any problems.
 
 
 ### Examples
