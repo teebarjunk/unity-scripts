@@ -34,7 +34,7 @@ public void Console_SetSettings(bool[] settings) {}
 // They can even be references to objects. Scroll down to Advanced Usage.
 public void Console_LogHealth(Console console = null) { console.Log(myHealth); }
 ```
-The in console...
+Then in console...
 ```c#
 GiveItem
 // Becomes: Create_GiveItem(Sword, 1)
