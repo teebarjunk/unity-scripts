@@ -106,6 +106,13 @@ const string consoleMethodHeader = "";
 And it will show ALL public methods in ALL components in ALL objects.
 It's not designed for this, so use with caution.
 
+### Render Debug
+On any component you want to show debug info for add the method.
+```c#
+public void RenderDebug() {}
+```
+Then tap D in game to toggle renderDebug. It will be updated every tick. This isn't fully implemented though.
+
 ### TODO
 * set parameters by their name
 * call methods on objects by type
