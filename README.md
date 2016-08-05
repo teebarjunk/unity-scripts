@@ -37,7 +37,7 @@ public void Console_LogHealth(Console console = null) { console.Log(myHealth); }
 Then in console...
 ```c#
 GiveItem
-// Becomes: Create_GiveItem(Sword, 1)
+//>> Console_GiveItem(Sword, 1)
 
 // Arrays are automatically created.
 SpawnEnemies Orc Orc Orc
