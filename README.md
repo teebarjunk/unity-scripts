@@ -63,6 +63,7 @@ SetSettings t false 1 0 TRUE False
 
 
 ### Advanced Usage
+#### Binding commands to keys.
 You can bind a command to a number key for faster play testing.
 ```C#
 // bind number command
@@ -72,7 +73,7 @@ bind 2 SetHealth 10
 bind 3 SpawnEnemies Orc Orc Orc
 bind 4 SpawnEnemies "Orc Master,Orc,Orc,Orc Slave"
 ```
-
+#### Returning a reference to an object.
 If you want methods to recieve a reference to an object:
 ```c#
 public void Console_TeleportPlayerTo(string target, Player player) {}
@@ -85,7 +86,15 @@ TeleportPlayerTo Volcanoe
 // it will call Console_TeleportPlayerTo(Volcanoe, myGame.player);
 ```
 It automatically has a reference to the console if you want to use it. Though there isn't much point atm.
-
+#### Getting ALL public methods.
+In Console.cs you can change
+```c#
+const string consoleMethodHeader = "Console_";  
+// to
+const string consoleMethodHeader = "";
+```
+And it will show ALL public methods in ALL components in ALL objects.
+It's not designed for this, so use with caution.
 
 ### TODO
 * set parameters by their name
