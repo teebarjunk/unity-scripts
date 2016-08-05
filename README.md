@@ -13,7 +13,7 @@ some script to make stuff easier.
 
 ### How to use.
 * Add Console.cs to any GameOject.
-* Inside any component scrtip create a method that start with Console_ (i.e. Console_ResetHealth(int newHealth = 100))
+* Inside any component create a method that start with Console_ (i.e. Console_ResetHealth(int newHealth = 100))
 * In play mode hit ~ to toggle Console.
 * Type: "ResetHealth" to call Console_ResetHealth on all objects, with the default parameter. (i.e. 100)
 * Type: "Player ResetHealth" to only call it on the object named Player.
