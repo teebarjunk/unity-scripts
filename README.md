@@ -99,3 +99,4 @@ It's not designed for this, so use with caution.
 ### TODO
 * set parameters by their name
 * call methods on objects by type
+* calling multiple methods in a single command
