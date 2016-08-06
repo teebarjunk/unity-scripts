@@ -22,8 +22,12 @@ public class Console : MonoBehaviour
     const string groupStart = "\"";                         // Used for grouping variables together.
     const string groupEnd = "\"";                           // ^
 
+    const string colorObject = "cyan";
+    const string colorMethod = "magenta";
+    const string colorBind = "grey";
+    const string colorParameters = "grey";
+
     const string consoleLogPath = "ConsoleLog.txt";         // Path to save console log to.
-    const string bindingsPath = "Bindings.txt";             // Path to save binding data to.
     const KeyCode consoleToggleKey = KeyCode.BackQuote;     // Key that toggles console.
     const KeyCode renderDebugToggleKey = KeyCode.D;         // Key that toggles debug rendering.
 
@@ -31,8 +35,6 @@ public class Console : MonoBehaviour
     [Tooltip("Call GameObject.SendMessage if no other Console method was found.")]
     public bool allowSendMessage = false;                   // Will call GameObject.SendMessage if no Console_ method was found.
 
-    [Tooltip("Set to false if you want to set bindings from the editor.")]
-    public bool loadBindingsOnPlay = true;                 // Set to false if you are setting these in editor mode.
 
     [Tooltip("Commands tied to numeric keys. Press 0-9 to call.")]
     public string[] bindings = new string[10];              // Commands that will be run if a digit between 0-9 is pressed.
@@ -44,11 +46,11 @@ public class Console : MonoBehaviour
     // Methods names available and the objects that have them.
     Dictionary<string, List<ComponentMethod>> byMethod = new Dictionary<string, List<ComponentMethod>>();
 
+    
     bool consoleIsOpen = false;
     bool renderDebug = true;
 
     string consoleCommand = "";
-    string lastConsoleCommand = "";
     List<string> consoleHistory = new List<string>();
     string consoleHistoryString = "";
     int consoleHistoryIndex = -1;
@@ -58,7 +60,6 @@ public class Console : MonoBehaviour
     string autoCompleteString = "";
     int autoCompleteIndex = -1;
 
-    KeyCode lastKeyCode;
     Dictionary<KeyCode, EventType> lastEvent = new Dictionary<KeyCode, EventType>();
 
     void Start()
@@ -131,6 +132,7 @@ public class Console : MonoBehaviour
         GUI.FocusControl("Console");
 
         bool moveToEndOfLine = false;
+        string lastConsoleCommand = consoleCommand;
 
         KeyCode key = GetPressed();
 
@@ -145,7 +147,7 @@ public class Console : MonoBehaviour
             // Set selected auto complete to console command.
             if (autoCompleteIndex != -1)
             {
-                consoleCommand += autoComplete[autoCompleteIndex] + splitOn;
+                consoleCommand += autoComplete[autoCompleteIndex];
                 autoCompleteIndex = -1;
                 moveToEndOfLine = true;
             }
@@ -165,28 +167,37 @@ public class Console : MonoBehaviour
         else if (key == KeyCode.UpArrow)
         {
             if (autoCompleteIndex != -1)
-                autoCompleteIndex = -1;
-            else if (consoleHistory.Count > 0)
             {
-                consoleHistoryIndex = (consoleHistoryIndex + 1) % consoleHistory.Count;
-                consoleCommand = consoleHistory[consoleHistory.Count - 1 - consoleHistoryIndex];
+                autoCompleteIndex = -1;
+                consoleHistoryIndex = 0;
             }
+            else if (consoleHistory.Count > 0)
+                consoleHistoryIndex = (consoleHistoryIndex + 1) % consoleHistory.Count;
 
+            consoleCommand = consoleHistory[consoleHistory.Count - 1 - consoleHistoryIndex];
             moveToEndOfLine = true;
         }
         // Auto complete history.
         else if (key == KeyCode.DownArrow && autoComplete.Count > 0)
         {
             if (consoleHistoryIndex != -1)
+            {
                 consoleHistoryIndex = -1;
+                autoCompleteIndex = 0;
+            }
             else
                 autoCompleteIndex = (autoCompleteIndex + 1) % autoComplete.Count;
         }
 
+        GUIStyle style = new GUIStyle();
+        style.normal.textColor = Color.white;
+        style.wordWrap = false;
+        style.richText = true;
+
         // Show history.
         GUI.Box(new Rect(0, 0, 800, 100), "");
         consoleScroll = GUILayout.BeginScrollView(consoleScroll, GUILayout.Width(800), GUILayout.Height(100));
-        GUILayout.Label(consoleHistoryString);
+        GUILayout.Label(consoleHistoryString, style);
         GUILayout.EndScrollView();
 
         // Show input field.
@@ -209,8 +220,6 @@ public class Console : MonoBehaviour
                 GUI.Box(new Rect(0, 120 + autoCompleteIndex * h, 200, h), "");
 
             // List.
-            GUIStyle style = new GUIStyle();
-            style.richText = true;
             GUI.Label(r, autoCompleteString, style);
         }
 
@@ -231,61 +240,6 @@ public class Console : MonoBehaviour
         }
     }
 
-    void UpdateAutoComplete()
-    {
-        autoComplete.Clear();
-        autoCompleteString = "";
-
-        string[] parts = consoleCommand.Split(new string[] { splitOn }, StringSplitOptions.None);
-        string last = parts[parts.Length - 1];
-        
-        if (parts.Length > 2)
-        {
-            autoComplete.Add("Ass");
-            autoCompleteString += "Ass\n";
-            return;
-        }
-
-        if (parts.Length > 1)
-        {
-            string objectName = parts[parts.Length - 2];
-
-            // First parameter was object, so list it's methods.
-            if (byObject.ContainsKey(objectName))
-            {
-                foreach (string go in byObject[objectName].Keys)
-                    if (go.Contains(last))
-                    {
-                        autoComplete.Add(go);
-                        autoCompleteString += go + "\n";
-                    }
-
-                return;
-            }
-        }
-
-        // List all objects.
-        foreach (string go in byObject.Keys)
-            if (go.Contains(last))
-            {
-                autoComplete.Add(go);
-                autoCompleteString += go + "\n";
-            }
-
-        // List all methods.
-        foreach (string m in byMethod.Keys)
-            if (m.Contains(last))
-            {
-                autoComplete.Add(m);
-                autoCompleteString += m + "\n";
-            }
-    }
-
-    public void Console_Ass(string str, bool b, int[] intarray, Console meep = null)
-    {
-        meep.Log(str + " " + b.ToString() + " " + StringHelper.ArrayToString(intarray));
-    }
-
     void Run_Command(string command)
     {
         // Clean whitespace.
@@ -297,30 +251,34 @@ public class Console : MonoBehaviour
 
         // Add to log.
         consoleHistory.Add(command);
-        consoleHistoryIndex = consoleHistory.Count;
-        consoleHistoryString += command + "\n";
-        // Scroll to bottom.
+        consoleHistoryIndex = 0;
+
+        // Scroll to bottom of console.
         consoleScroll.y = float.MaxValue;
 
         // Save log.
-        SaveConsoleHistory();
+        Save();
 
         // Run.
         string[] parts = MethodHelper.CommandSplit(command, splitOn, groupStart, groupEnd);
+        WriteToConsole(parts);
+
         string first = parts[0];
+        string second = parts.Length > 1 ? parts[1] : "";
 
         // Bind a command to a keyboard.
         if (first == "bind")
         {
-            // Set binding,
-            bindings[int.Parse(parts[1])] = StringHelper.ArrayToString(parts, splitOn, 2);
-            // Save bindings.
-            SaveBindings();
-            return;
-        }
+            if (parts.Length < 3)
+            {
+                Log("bind must be followed by a numeral and then a command.", "red");
+                return;
+            }
 
+            bindings[int.Parse(parts[1])] = StringHelper.ArrayToString(parts, splitOn, 2);
+        }
         // On single object that has method.
-        if (parts.Length > 1 && byObject.ContainsKey(first))
+        else if (parts.Length > 1 && byObject.ContainsKey(first))
         {
             string method = parts[1];
 
@@ -353,9 +311,107 @@ public class Console : MonoBehaviour
             Log("Command " + first + " not recognized");
     }
 
+    void WriteToConsole(string[] data)
+    {
+        string[] colorized = new string[data.Length];
+
+        for (int i = 0; i < data.Length; i++)
+            colorized[i] = Consolify(data[i]);
+
+        consoleHistoryString += string.Join(" ", colorized) + "\n";
+    }
+
+    string Consolify(string data, bool showParameters = false)
+    {
+        // Bind.
+        if (data == "bind")
+            return "<color=" + colorBind + ">" + data + "</color>";
+
+        // Objects.
+        if (byObject.ContainsKey(data))
+            return "<color=" + colorObject + ">" + data + "</color>";
+
+        // Methods/Parameters.
+        if (byMethod.ContainsKey(data))
+        {
+            string parameters = "";
+
+            if (showParameters)
+                parameters = GetParametersString(byMethod[data][0].methodInfo);
+
+            return "<color=" + colorMethod + ">" + data + "</color>" + parameters;
+        }
+
+        // Default white.
+        return data;
+    }
+
+    string GetParametersString(MethodInfo mi)
+    {
+        ParameterInfo[] pis = mi.GetParameters();
+        string[] args = new string[pis.Length];
+        for (int i = 0; i < pis.Length; i++)
+        {
+            string arg = "<color=" + colorParameters + ">" + pis[i].Name + "</color>";
+
+            if (MethodHelper.IsArray(pis[i].ParameterType))
+                args[i] = "[" + arg + "]";
+            else
+                args[i] = arg;
+        }
+
+        return " (" + string.Join(", ", args) + ")";
+    }
+
     public void Log(string data, string color = "white")
     {
         Debug.Log(data);
+    }
+
+    void UpdateAutoComplete()
+    {
+        autoComplete.Clear();
+        autoCompleteString = "";
+
+        string[] parts = consoleCommand.Split(new string[] { splitOn }, StringSplitOptions.None);
+        string last = parts[parts.Length - 1];
+        string secondLast = parts[Math.Max(0, parts.Length - 2)];
+
+        // List object methods.
+        if (byObject.ContainsKey(secondLast))
+        {
+            foreach (string go in byObject[secondLast].Keys)
+                if (go.Contains(last))
+                {
+                    autoComplete.Add(go);
+                    autoCompleteString += Consolify(go, true) + "\n";
+                }
+        }
+        // List method parameters.
+        else if (byMethod.ContainsKey(secondLast))
+        {
+            string paramString = GetParametersString(byMethod[secondLast][0].methodInfo);
+            //autoComplete.Add(paramString);
+            autoCompleteString += paramString + "\n";
+        }
+        else
+        {
+            // List all objects.
+            foreach (string go in byObject.Keys)
+                if (go.Contains(last))
+                {
+                    autoComplete.Add(go);
+                    autoCompleteString += Consolify(go, true) + "\n";
+                }
+
+            // List all methods.
+            foreach (string m in byMethod.Keys)
+                if (m.Contains(last))
+                {
+                    autoComplete.Add(m);
+                    autoCompleteString += Consolify(m, true) + "\n";
+                }
+        }
     }
 
     void UpdateMethodList()
@@ -364,11 +420,14 @@ public class Console : MonoBehaviour
         byMethod.Clear();
 
         foreach (GameObject go in FindObjectsOfType(typeof(GameObject)) as GameObject[])
+        {
             foreach (Component c in go.GetComponents<Component>())
+            if (c != null)
+            {
                 foreach (MethodInfo m in c.GetType().GetMethods())
+                {
                     if (m.Name.StartsWith("Console_"))
                     {
-                        //methodInfo.Invoke(component, AsParameters(data));
                         ComponentMethod cm = new ComponentMethod(c, m);
                         string mod_name = m.Name.Replace("Console_", "");
 
@@ -387,15 +446,12 @@ public class Console : MonoBehaviour
 
                         break;
                     }
+                }
+            }
+        }
     }
 
     void Save()
-    {
-        SaveConsoleHistory();
-        SaveBindings();
-    }
-
-    void SaveConsoleHistory()
     {
         // Limit logging to last 100 commands.
         int start = Math.Max(0, consoleHistory.Count - 101);
@@ -406,24 +462,8 @@ public class Console : MonoBehaviour
         file.Close();
     }
 
-    void SaveBindings()
-    {
-        StreamWriter file = File.CreateText(bindingsPath);
-        for (int i = 0; i < 10; i++)
-            file.WriteLine(bindings[i]);
-        file.Close();
-    }
-
     void Load()
     {
-        // Load bindings.
-        if (loadBindingsOnPlay)
-        {
-            int i = 0;
-            foreach (string line in FileHelper.LoadFile(bindingsPath))
-                bindings[i++] = line;
-        }
-        
         // Load history.
         foreach (string line in FileHelper.LoadFile(consoleLogPath))
             consoleHistory.Add(line);

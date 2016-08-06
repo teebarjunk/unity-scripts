@@ -136,13 +136,12 @@ public class MethodHelper
         return parts;
     }
 
-    static bool IsArray(Type t)
+    public static bool IsArray(Type t)
     {
         if (t == typeof(string[])) return true;
         if (t == typeof(int[])) return true;
         if (t == typeof(float[])) return true;
         if (t == typeof(bool[])) return true;
-
         return false;
     }
 }
